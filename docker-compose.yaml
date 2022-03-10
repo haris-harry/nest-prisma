@@ -1,0 +1,46 @@
+version: '3.9'
+
+
+services:
+
+  prisma_node:
+    container_name: prisma_node
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    # restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image:  #we can sue image path here
+    volumes:
+      - .:/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    command: npm run start:migrate:prod
+    
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres:
+    name: nest-db
+
